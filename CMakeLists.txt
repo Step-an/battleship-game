@@ -3,4 +3,11 @@ project(battleship_game)
 
 set(CMAKE_CXX_STANDARD 26)
 
-add_executable(battleship_game main.cpp)
+add_executable(battleship_game main.cpp
+        ConsoleRender.cpp
+        ConsoleRender.h
+        GameEngine.cpp
+        GameEngine.h
+        BoardWidget.cpp
+        BoardWidget.h
+)
