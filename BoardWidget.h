@@ -6,14 +6,28 @@
 #include "ConsoleRender.h"
 
 
+enum class CellState {
+    untouched,
+    shotNoShip,
+    ship,
+    destroyed,
+    shotShip,
+};
+
 class BoardWidget {
     ConsoleRender &render;
     uint32_t width = 0, height = 0;
+    uint32_t left_top_x;
+    uint32_t left_top_y;
+    static int readUTF32Char(std::ifstream &file, char32_t& output);
+
 public:
     BoardWidget(ConsoleRender &render, uint32_t left_top_x, uint32_t left_top_y);
     uint32_t getWidth() { return width; }
     uint32_t getHeight() { return height; }
-};
+    void setCellState(int column, int raw, CellState state);
+    CellState getCellState(int column, int raw);
 
+};
 
 #endif //BATTLESHIP_GAME_BOARDWIDGET_H

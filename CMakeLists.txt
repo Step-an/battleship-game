@@ -10,4 +10,6 @@ add_executable(battleship_game main.cpp
         GameEngine.h
         BoardWidget.cpp
         BoardWidget.h
+        TextWidget.cpp
+        TextWidget.h
 )

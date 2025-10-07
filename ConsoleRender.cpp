@@ -1,5 +1,6 @@
 #include "ConsoleRender.h"
 
+#include <iostream>
 #include <stdexcept>
 
 ConsoleRender::ConsoleRender(uint32_t width, uint32_t height) : width(width), height(height) {
@@ -14,15 +15,23 @@ void ConsoleRender::setChar(uint32_t x, uint32_t y, char32_t c) {
     buffer[y*width + x] = c;
 }
 
-void ConsoleRender::sePosToRead(uint32_t x, uint32_t y) {
+void ConsoleRender::read(uint32_t x, uint32_t y) {
+    while (true) {
+        setPosition(x, y);
+        cursorOn();
+        std::string input;
+        std::getline(std::cin, input);
+        cursorOff();
+        for (uint32_t i = x; i < width; i++) {
+            setChar(i, y, U'\0');
+        }
+        reRender();
+        callback(input);
+    }
 }
 
-void ConsoleRender::onRead(std::function<void(const std::string&)> callback) {
-
-}
-
-void ConsoleRender::setCanvas(char *data) {
-
+void ConsoleRender::setOnRead(std::function<void(const std::string&)> fun) {
+    callback = fun;
 }
 
 void ConsoleRender::reRender() {
@@ -52,8 +61,7 @@ void ConsoleRender::setPosition(uint32_t x, uint32_t y) {
     printf("\x1b[%i;%iH", y, x);
 }
 
-void ConsoleRender::cursorOn()
-{
+void ConsoleRender::cursorOn() {
     printf("\x1b[?25h");
 }
 
