@@ -126,7 +126,7 @@ void GameEngine::processDestroyedShip(BoardWidget &widget, Ship &ship, std::arra
     for (auto &coord: ship.getCells()) {
         for (int i = -1; i <= 1; ++i) {
             for (int j = -1; j <= 1; ++j) {
-                if (coord.first + i > 0 && coord.second + j > 0) {
+                if (coord.first + i > 0  && coord.first + i < 11 && coord.second + j > 0 && coord.second + j < 11) {
                     if (!ship.getCells().contains({coord.first + i, coord.second + j})) {
                         widget.setCellState(coord.first + i, coord.second + j, CellState::shotNoShip);
                         (*destroyedCells)[coord.first + i - 1][coord.second + j - 1] = true;
