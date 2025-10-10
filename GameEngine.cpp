@@ -163,6 +163,37 @@ void GameEngine::fillArr(std::array<std::array<bool, 10>, 10> &arr) {
     }
 }
 
+bool GameEngine::turn(std::vector<Ship> *ships, BoardWidget *widget, std::array<std::array<bool, 10>, 10> *destroyedCells, int playerNumber) {
+    auto coord = getOneCoord();
+    text2->setText("");
+    while ((*destroyedCells)[coord.first - 1][coord.second - 1]) {
+        text->setText(U"Already shot this cell. Try again:");
+        coord = getOneCoord();
+    }
+    bool damage = false;
+    for (auto &ship : *ships) {
+        if (ship.getCells().contains(coord)) {
+            damage = true;
+            ship.addDamagedCell(coord);
+            text2->setText(U"Enemy ship is damaged!");
+            widget->setCellState(coord.first, coord.second, CellState::shotShip);
+            (*destroyedCells)[coord.first - 1][coord.second - 1] = true;
+            if (ship.isDestroyed()) {
+                text2->setText(U"Enemy ship is destroyed!");
+                processDestroyedShip(*widget, ship, destroyedCells);
+                checkForEndingOfGameAndEnd(ships, playerNumber == 1 ? 2 : 1);
+            }
+        }
+    }
+    if (!damage) {
+        widget->setCellState(coord.first, coord.second, CellState::shotNoShip);
+        (*destroyedCells)[coord.first - 1][coord.second - 1] = true;
+        text2->setText("Miss");
+        return false;
+    } else {
+        return true;
+    }
+}
 void GameEngine::start() {
     text->setText(U"Enter start to start placing ships");
     std::string input;
@@ -193,45 +224,23 @@ void GameEngine::start() {
         int curBoardInd = 0;
         std::vector<Ship>* ships;
         std::array<std::array<bool, 10>, 10> *destroyedCells;
+        std::u32string label;
         if (turnOfFirst) {
             curBoardInd = 1;
             ships = &ships2;
             destroyedCells = &isCellShot2;
-            text->setText(U"Turn of the first player. Type coordinates where to shoot:");
+            label = U"Turn of the first player. Type coordinates where to shoot:";
         } else {
             curBoardInd = 0 ;
             ships = &ships1;
             destroyedCells = &isCellShot1;
-            text->setText(U"Turn of the second player. Type coordinates where to shoot:");
+            label = U"Turn of the second player. Type coordinates where to shoot:";
+        }
+        text->setText(label);
+        while (turn(ships, &boards[curBoardInd], destroyedCells, curBoardInd + 1)) {
+            text->setText(label);
         }
 
-
-        auto coord = getOneCoord();
-        text2->setText("");
-        while ((*destroyedCells)[coord.first - 1][coord.second - 1]) {
-            text->setText(U"Already shot this cell. Try again:");
-            coord = getOneCoord();
-        }
-        bool damage = false;
-        for (auto &ship : *ships) {
-            if (ship.getCells().contains(coord)) {
-                damage = true;
-                ship.addDamagedCell(coord);
-                text2->setText(U"Enemy ship is damaged!");
-                boards[curBoardInd].setCellState(coord.first, coord.second, CellState::shotShip);
-                (*destroyedCells)[coord.first - 1][coord.second - 1] = true;
-                if (ship.isDestroyed()) {
-                    text2->setText(U"Enemy ship is destroyed!");
-                    processDestroyedShip(boards[curBoardInd], ship, destroyedCells);
-                    checkForEndingOfGameAndEnd(ships, curBoardInd == 0 ? 1 : 2);
-                }
-            }
-        }
-        if (!damage) {
-            boards[curBoardInd].setCellState(coord.first, coord.second, CellState::shotNoShip);
-            (*destroyedCells)[coord.first - 1][coord.second - 1] = true;
-            text2->setText("Miss");
-        }
         turnOfFirst = !turnOfFirst;
     }
 

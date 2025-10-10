@@ -36,6 +36,7 @@ class GameEngine {
 
     void checkForEndingOfGameAndEnd(std::vector<Ship> *ships, int whoIsLooser);
     void fillArr(std::array<std::array<bool, 10>, 10> &arr);
+    bool turn(std::vector<Ship> *ships, BoardWidget *widget, std::array<std::array<bool, 10>, 10> *destroyedCells, int playerNumber);
 
 public:
     GameEngine(std::shared_ptr<ConsoleRender> render, std::vector<BoardWidget> &boards,
