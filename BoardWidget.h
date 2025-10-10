@@ -19,7 +19,6 @@ class BoardWidget {
     uint32_t width = 0, height = 0;
     uint32_t left_top_x;
     uint32_t left_top_y;
-    static int readUTF32Char(std::ifstream &file, char32_t& output);
 
 public:
     BoardWidget(std::shared_ptr<ConsoleRender> render, uint32_t left_top_x, uint32_t left_top_y);

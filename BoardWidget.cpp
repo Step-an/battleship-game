@@ -2,24 +2,33 @@
 
 #include <iostream>
 
-int BoardWidget::readUTF32Char(std::ifstream &file, char32_t &output) {
-    char ch[4];
-    file.read(ch, 4);
-    if (file.fail()) {
-        return -1;
-    } else {
-        std::swap(ch[0], ch[3]);
-        std::swap(ch[1], ch[2]);
-        output = *reinterpret_cast<char32_t*>(ch);
-        return 0;
-    }
-}
+const std::u32string boardCanvas = UR"(    A    B     C   D     E   F    G    H    I    J
+  ╔════╤════╤════╤════╤════╤════╤════╤════╤════╤════╗
+ 1║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+ 2║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+ 3║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+ 4║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+ 5║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+ 6║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+ 7║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+ 8║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+ 9║    │    │    │    │    │    │    │    │    │    ║
+  ╟────┼────┼────┼────┼────┼────┼────┼────┼────┼────╢
+10║    │    │    │    │    │    │    │    │    │    ║
+  ╚════╧════╧════╧════╧════╧════╧════╧════╧════╧════╝)";
+
 
 BoardWidget::BoardWidget(std::shared_ptr<ConsoleRender> render, uint32_t left_top_x, uint32_t left_top_y): render(render), left_top_x(left_top_x), left_top_y(left_top_y) {
-    std::ifstream mf("/home/stepan/school/programming_school/battleship-game/board.txt");
     uint32_t curx = left_top_x, cury = left_top_y;
-    char32_t ch;
-    while (readUTF32Char(mf, ch) != -1) {
+    for (auto ch : boardCanvas) {
         if (ch == U'\n') {
             cury++;
             width = std::max(width, curx - left_top_x + 1);
