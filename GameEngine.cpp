@@ -147,7 +147,7 @@ void GameEngine::checkForEndingOfGameAndEnd(std::vector<Ship> *ships, int whoIsL
             return;
         }
     }
-    if (whoIsLooser == 1) {
+    if (whoIsLooser == 2) {
         text->setText(U"Second player has won. Congratulations!");
     } else {
         text->setText(U"First player has won. Congratulations!");
