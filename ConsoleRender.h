@@ -9,6 +9,8 @@ class ConsoleRender {
     char32_t *buffer;
     uint32_t width;
     uint32_t height;
+    uint32_t readx = 0;
+    uint32_t ready = 0;
     std::function<void(const std::string&)> callback;
 
     void cursorOn();
@@ -22,9 +24,11 @@ public:
     ConsoleRender(uint32_t width, uint32_t height);
     char32_t getChar(uint32_t x, uint32_t y);
     void setChar(uint32_t x, uint32_t y, char32_t c);
-    void read(uint32_t x, uint32_t y);
+    void read();
     void setOnRead(std::function<void(const std::string&)> fun);
     void reRender();
+    void setPosToRead(uint32_t x, uint32_t y);
+    std::string readValue();
     ~ConsoleRender();
 };
 

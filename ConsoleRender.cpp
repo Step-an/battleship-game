@@ -15,18 +15,21 @@ void ConsoleRender::setChar(uint32_t x, uint32_t y, char32_t c) {
     buffer[y*width + x] = c;
 }
 
-void ConsoleRender::read(uint32_t x, uint32_t y) {
-    while (true) {
-        setPosition(x, y);
-        cursorOn();
-        std::string input;
-        std::getline(std::cin, input);
-        cursorOff();
-        for (uint32_t i = x; i < width; i++) {
-            setChar(i, y, U'\0');
-        }
-        reRender();
-        callback(input);
+std::string ConsoleRender::readValue() {
+    setPosition(readx, ready);
+    cursorOn();
+    std::string input;
+    std::getline(std::cin, input);
+    cursorOff();
+    for (uint32_t i = readx; i < width; i++) {
+        setChar(i, ready, U'\0');
+    }
+    reRender();
+    return input;
+}
+void ConsoleRender::read() {
+    while (true) {;
+        callback(readValue());
     }
 }
 
@@ -51,6 +54,11 @@ void ConsoleRender::reRender() {
             }
         }
     }
+}
+
+void ConsoleRender::setPosToRead(uint32_t x, uint32_t y) {
+    readx = x;
+    ready = y;
 }
 
 ConsoleRender::~ConsoleRender() {
