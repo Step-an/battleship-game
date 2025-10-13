@@ -5,15 +5,16 @@
 #include <set>
 
 std::pair<int, int> GameEngine::parseCoord(const std::string &coord) {
-    int row = 0;
-    size_t idx = 0;
-    while (idx < coord.size() && std::isdigit(static_cast<unsigned char>(coord[idx]))) {
-        row = row * 10 + (coord[idx] - '0');
-        ++idx;
+    char letter = ' ';
+    std::string num;
+    if (std::isalpha(coord[0])) {
+        letter = std::tolower(coord[0]);
+        num = coord.substr(1, coord.size() - 1);
+    } else {
+        num = coord.substr(0, coord.size() - 1);
+        letter = std::tolower(coord.back());
     }
-    char letter = std::toupper(static_cast<unsigned char>(coord[idx]));
-    int col = letter - 'A' + 1;
-    return {col, row};
+    return {letter - 'a' + 1, std::stoi(num)};
 }
 std::set<std::pair<int, int>> GameEngine::pointsOfShip(std::pair<int, int> coord1, std::pair<int, int> coord2) {
     std::set<std::pair<int, int>> coordsToTake;
@@ -59,8 +60,9 @@ bool GameEngine::validateCoord(std::pair<int, int> coord1, std::pair<int, int> c
 
 std::pair<std::pair<int, int>, std::pair<int, int>> GameEngine::getCoords() {
     std::string coordinates = render->readValue();
-    std::regex coordreg("(?:[1-9]|10)[A-J] (?:[1-9]|10)[A-J]");
-    while (!std::regex_match(coordinates, coordreg)) {
+    std::regex coordreg("(?:[1-9]|10)(?:[A-J]|[a-j]) (?:[1-9]|10)(?:[A-J]|[a-j])");
+    std::regex coordreg2("(?:[A-J]|[a-j])(?:[1-9]|10) (?:[A-J]|[a-j])(?:[1-9]|10)");
+    while (!(std::regex_match(coordinates, coordreg)||std::regex_match(coordinates, coordreg2))) {
         text->setText(U"Incorrect input. Try again:");
         coordinates = render->readValue();
     }
@@ -114,8 +116,9 @@ void GameEngine::flashBoards() {
 
 std::pair<int, int> GameEngine::getOneCoord() {
     std::string input = render->readValue();
-    std::regex coordreg("(?:[1-9]|10)[A-J]");
-    while (!std::regex_match(input, coordreg)) {
+    std::regex coordreg("(?:[1-9]|10)(?[A-J]|[a-j])");
+    std::regex coordreg2("(?:[A-J]|[a-j])(?:[1-9]|10)");
+    while (!(std::regex_match(input, coordreg)||std::regex_match(input, coordreg2))) {
         text->setText(U"Incorrect input. Try again:");
         input = render->readValue();
     }
@@ -195,30 +198,20 @@ bool GameEngine::turn(std::vector<Ship> *ships, BoardWidget *widget, std::array<
     }
 }
 void GameEngine::start() {
-    text->setText(U"Enter start to start placing ships");
+    text->setText(U"Press enter to start placing ships");
     std::string input;
-    while (input != "start") {
-            input = render->readValue();
-    }
-    text->setText(U"Let the first player choose ship positions. Enter start to start setting positions of ships");
+    render->readValue();
+    text->setText(U"Let the first player choose ship positions. Press enter to start setting positions of ships");
     input = "";
-    while (input != "start") {
-        input = render->readValue();
-    }
+    render->readValue();
     inputShips(ships1, boards[0]);
     flashBoards();
-    text->setText(U"The first player has ended placement of his ships. Type start to let the second player do it:");
-    input = "";
-    while (input != "start") {
-        input = render->readValue();
-    }
+    text->setText(U"The first player has ended placement of his ships. Press enter to let the second player do it:");
+    render->readValue();
     inputShips(ships2, boards[1]);
     flashBoards();
-    text->setText(U"Placement of ships has ended. Type start to start the game:");
-    input = "";
-    while (input != "start") {
-        input = render->readValue();
-    }
+    text->setText(U"Placement of ships has ended. Press enter to start the game:");
+    render->readValue();
     bool turnOfFirst = true;
     while (true) {
         int curBoardInd = 0;
